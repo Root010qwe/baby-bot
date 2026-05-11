@@ -10,7 +10,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from bot.config import BOT_TOKEN
 from bot.models import init_db
 from bot.services.scheduler import setup_scheduler, reschedule_jobs
-from bot.handlers import menu, sleep, weight, music, analytics, night_report, settings
+from bot.handlers import menu, sleep, weight, music, analytics, night_report, settings, admin
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger(__name__)
@@ -35,6 +35,7 @@ async def main():
     )
     dp = Dispatcher()
 
+    dp.include_router(admin.router)
     dp.include_router(menu.router)
     dp.include_router(sleep.router)
     dp.include_router(night_report.router)
