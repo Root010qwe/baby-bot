@@ -20,14 +20,8 @@ def _make_session() -> AiohttpSession | None:
     proxy = os.getenv("SOCKS5_PROXY")
     if not proxy:
         return None
-    try:
-        from aiohttp_socks import ProxyConnector
-        connector = ProxyConnector.from_url(proxy)
-        log.info("Using SOCKS5 proxy: %s", proxy)
-        return AiohttpSession(connector=connector)
-    except Exception as e:
-        log.warning("Failed to set up proxy: %s", e)
-        return None
+    log.info("Using proxy: %s", proxy)
+    return AiohttpSession(proxy=proxy)
 
 
 async def main():
