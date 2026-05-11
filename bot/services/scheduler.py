@@ -3,7 +3,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
 
-from bot.config import TZ, ALLOWED_USERS
+from bot.config import TZ, ALLOWED_USERS, ADMIN_IDS, MOM_IDS
 
 _scheduler: AsyncIOScheduler | None = None
 
@@ -138,7 +138,7 @@ async def _job_weight_reminder(bot):
     if await get_setting("weight_reminder_enabled") != "1":
         return
     text = "⚖️ *Напоминание*\n\nНе забудь взвесить Феликса сегодня!"
-    for uid in ALLOWED_USERS:
+    for uid in ADMIN_IDS | MOM_IDS:
         try:
             await bot.send_message(uid, text, parse_mode="Markdown")
         except Exception:

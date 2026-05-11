@@ -9,7 +9,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from bot.config import BOT_TOKEN
 from bot.models import init_db
-from bot.services.scheduler import setup_scheduler
+from bot.services.scheduler import setup_scheduler, reschedule_jobs
 from bot.handlers import menu, sleep, weight, music, analytics, night_report, settings
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -46,6 +46,7 @@ async def main():
     scheduler = AsyncIOScheduler()
     setup_scheduler(bot, scheduler)
     scheduler.start()
+    await reschedule_jobs(bot)  # apply any saved settings from DB
 
     log.info("Bot started")
     try:

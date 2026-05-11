@@ -1,13 +1,15 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
-SLEEP_BTN = "😴 Сон"
-WEIGHT_BTN = "⚖️ Вес"
-MUSIC_BTN = "🎵 Музыка"
-STATS_BTN = "📊 Статистика"
+# Button labels — used as message text matchers in menu.py
+SLEEP_BTN    = "😴 Сон"
+WEIGHT_BTN   = "⚖️ Вес"
+MUSIC_BTN    = "🎵 Музыка"
+STATS_BTN    = "📊 Статистика"
 SETTINGS_BTN = "⚙️ Настройки"
 
 
-def main_kb() -> ReplyKeyboardMarkup:
+def full_kb() -> ReplyKeyboardMarkup:
+    """Keyboard for mom and admin — all features."""
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text=SLEEP_BTN), KeyboardButton(text=WEIGHT_BTN)],
@@ -17,6 +19,23 @@ def main_kb() -> ReplyKeyboardMarkup:
         resize_keyboard=True,
         persistent=True,
     )
+
+
+def dad_kb() -> ReplyKeyboardMarkup:
+    """Simplified keyboard for dad — sleep and music only."""
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text=SLEEP_BTN)],
+            [KeyboardButton(text=MUSIC_BTN)],
+        ],
+        resize_keyboard=True,
+        persistent=True,
+    )
+
+
+def kb_for(user_id: int) -> ReplyKeyboardMarkup:
+    from bot.config import is_full_access
+    return full_kb() if is_full_access(user_id) else dad_kb()
 
 
 def remove_kb() -> ReplyKeyboardRemove:
