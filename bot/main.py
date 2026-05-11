@@ -1,7 +1,9 @@
 import asyncio
 import logging
+import os
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -14,10 +16,29 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 log = logging.getLogger(__name__)
 
 
+def _make_session() -> AiohttpSession | None:
+    proxy = os.getenv("SOCKS5_PROXY")
+    if not proxy:
+        return None
+    try:
+        from aiohttp_socks import ProxyConnector
+        connector = ProxyConnector.from_url(proxy)
+        log.info("Using SOCKS5 proxy: %s", proxy)
+        return AiohttpSession(connector=connector)
+    except Exception as e:
+        log.warning("Failed to set up proxy: %s", e)
+        return None
+
+
 async def main():
     await init_db()
 
-    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN))
+    session = _make_session()
+    bot = Bot(
+        token=BOT_TOKEN,
+        session=session,
+        default=DefaultBotProperties(parse_mode=ParseMode.MARKDOWN),
+    )
     dp = Dispatcher()
 
     dp.include_router(menu.router)
